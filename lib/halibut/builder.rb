@@ -1,4 +1,5 @@
 require 'halibut/core/resource'
+require 'halibut/dsl'
 
 module Halibut
 
@@ -28,10 +29,11 @@ module Halibut
     #
     class RootContext
 
+      include DSL
+
       def initialize(resource, &blk)
         @resource = resource
-
-        instance_eval(&blk) if block_given?
+        instance_eval_with_previous_context_available(&blk) if block_given?
       end
 
       # Sets a property on the resource.
@@ -108,11 +110,13 @@ module Halibut
 
     class RelationContext
 
+      include DSL
+
       def initialize(resource, rel, &blk)
         @resource = resource
         @rel      = rel
 
-        instance_eval(&blk) if block_given?
+        instance_eval_with_previous_context_available(&blk) if block_given?
       end
 
       def link(href, opts={})

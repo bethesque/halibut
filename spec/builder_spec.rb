@@ -179,4 +179,22 @@ describe Halibut::Builder do
     end
   end
 
+  describe "Using methods declared outside the builder" do
+    it "evaluates the methods in the context of the block's declaration scope" do
+      def local_method
+        'bar'
+      end
+
+      builder = Halibut::Builder.new do
+        property 'foo', local_method
+      end
+
+      resource = Halibut::Core::Resource.new
+      resource.set_property 'foo', local_method
+
+      builder.resource.properties['foo'].must_equal local_method
+      builder.resource.must_equal resource, diff(builder.resource.to_hash, resource.to_hash)
+    end
+  end
+
 end
